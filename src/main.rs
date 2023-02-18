@@ -31,27 +31,25 @@ fn main() {
     // get focused window
     let t = c.get_tree().unwrap();
     let mut name = "".to_string();
-    let mut stack: Vec<Node> = Vec::new();
+    //let mut stack = t.nodes.into_iter().chain(t.floating_nodes.into_iter()).collect::<Vec<Node>>();
+    let mut stack = t.nodes; stack.extend(t.floating_nodes);
     let mut tmp_stack: Vec<Node> = Vec::new();
-    for n in t.nodes.iter().cloned() {stack.push(n)}        
-    for n in t.floating_nodes.iter().cloned() {stack.push(n)}        
     
     while name.is_empty() {
-      for n in stack.iter() {
-        if n.focused == true { 
-            name = n.name.clone().unwrap().to_string(); 
-            break;
+      for n in stack.drain(..) {
+        if n.focused { 
+          name = n.name.unwrap(); 
+          break;
         };
-        for tn in n.nodes.iter().cloned() {tmp_stack.push(tn)}        
-        for tn in n.floating_nodes.iter().cloned() {tmp_stack.push(tn)}        
+        tmp_stack.extend(n.nodes); 
+        tmp_stack.extend(n.floating_nodes); 
       };
-      stack.clear();
-      for n in tmp_stack.iter().cloned() {stack.push(n)}
-      tmp_stack.clear();
+      //stack.extend(tmp_stack.drain(..));
+      stack.append(&mut tmp_stack);
     }
 
     // get focused workspace
-    let ws = c.get_workspaces().unwrap().workspaces.iter().find(|b| b.focused == true).unwrap().num;
+    let ws = c.get_workspaces().unwrap().workspaces.iter().find(|b| b.focused).unwrap().num;
 
     // get free mem
     s.refresh_memory();

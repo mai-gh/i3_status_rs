@@ -14,6 +14,8 @@ fn main() {
   // initialize for ram
   let mut s = System::new_all();
 
+
+
   // initialize for power
   let m = battery::Manager::new().expect("OK");
   let mut batteries = m.batteries().expect("OK");
@@ -39,6 +41,9 @@ fn main() {
       for n in stack.drain(..) {
         if n.focused { 
           name = n.name.unwrap(); 
+          // https://stackoverflow.com/questions/983451
+          name = name.replace("\\", "\\\\");
+          name = name.replace("\"", "\\\"");
           break;
         };
         tmp_stack.extend(n.nodes); 

@@ -64,7 +64,7 @@ fn main() {
     m.refresh(&mut battery).expect("OK");
     let bpf: f32  = battery.state_of_charge().into();
     //let bps = format!("{:.0}%", (100.0 * bpf));
-    let bps = format!("{:.0}%", (100.0 * bpf));
+    let bps = format!("{:.0}", (100.0 * bpf));
     let b_state = battery.state();
     let power_state = b_state.to_string().to_uppercase().chars().next().unwrap();
   
@@ -79,7 +79,9 @@ fn main() {
     let i_name = i_tmp.replace("__#__", name.as_str());
     let i_ws = i_tmp.replace("__#__", ws.to_string().as_str());
     let i_mem = i_tmp.replace("__#__", (free_mem_mb.to_string() + "M").as_str());
-    let i_bat = i_tmp.replace("__#__", (power_state.to_string() + ":" + bps.as_str()).as_str());
+    let mut i_bat = i_tmp.replace("__#__", (power_state.to_string() + ":" + bps.as_str() + "%").as_str());
+    if power_state == 'D' && bps.parse::<i32>().unwrap() <= 20 { i_bat = i_bat.replace("}", r#", "urgent": true }"#); }
+
     let i_time = i_tmp.replace("__#__", time.to_string().as_str());
     print!("[");
     print!("{},", i_name);
